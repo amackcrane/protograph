@@ -5,7 +5,7 @@ Draw network diagrams where nodes and edges have arbitrary text fields attached
 usage example:
 
 ```
-<prompt>:<dir> <user>$ pg
+<command-line-prompt>$ pg
 using /<path-to-repo>/data/test
 > node hi how are you
 1
