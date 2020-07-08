@@ -4,7 +4,7 @@
 
 
 ## vvvvvvvvvvvvvvvv  Either set 'path' to install location, or read it from file 
-path=$(cat $HOME/.config/protograph)
+export path=$(cat $HOME/.config/protograph)
 ## ^^^^^^^^^^^^^^^^
 
 

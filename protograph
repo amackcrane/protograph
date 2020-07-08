@@ -19,14 +19,19 @@ to start: 'pg <graphname>'
 
 node <text>
 link <src_id> <target_id> [<text>]
+- for both 'node' and 'link', text arg should be unquoted, may be multiple words
+- links must be directed for now
 list [<search_key> [<search_key> [...]]]
+- if multiple keys, returns union
+- doesnt support quoted multiword keys
 list-link [<node_id> | -s <search_key>]
 rm <node_id>
 rm-link <src_id> <target_id>
 render
-- render network with plotly; opens browser
+- render network with plotly in browser
 edit
 - pull up data json in text file, for buggy things
+
 
 EOF
 	   )"\n\n"
@@ -99,7 +104,7 @@ function get_id {
     }
 
 if test $node; then
-    text=$1
+    text=$@
 
     if test -z "$text"; then
 	printf "$help_text"
@@ -110,7 +115,8 @@ if test $node; then
     id=$(get_id)
     echo $id
 
-    jq --arg id $id --arg text "$text" '.nodes += [{id: $id, text: $text}]' <$file >${file}_tmp \
+    jq --arg id $id --arg text "$text" '.nodes += [{id: $id, text: $text}]' \
+       <$file >${file}_tmp \
 	&& mv ${file}_tmp $file
 fi
 
@@ -153,7 +159,7 @@ if test $link; then
 	jq <<<"$existing"
 	read -p "Link exists; modify? (y/n) > " modify
 	if test $modify == "y"; then
-	    protograph rm-link $src $target
+	    $path/protograph rm-link $src $target
 	else
 	    echo "Fine then, doing nothing"
 	    exit
@@ -232,15 +238,16 @@ fi
 function remove {
     cp $file ${file}_bak
     jq --arg id $1 \
-       '.nodes[] |= select(.id!=$id)' <$file >${file}_tmp \
+       'del(.nodes[] | select(.id==$id))' <$file >${file}_tmp \
 	&& mv ${file}_tmp $file
 }
 
 if test $remove; then
     id=$1
+    shift
 
     # too lazy to clean up links; make the user do it
-    links=$(protograph list-link $id)
+    links=$($path/protograph list-link $id)
     if test "$links"; then
 	echo "Clean up its links first!"
 	jq <<<"$links"
@@ -265,6 +272,10 @@ if test $remove; then
 
     # remove
     remove $id
+
+    if test $# -gt 0; then
+	$path/protograph rm $@
+    fi
 
 fi
 
