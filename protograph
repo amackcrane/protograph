@@ -236,7 +236,7 @@ if test $list_link; then
 	fi
 	
     else
-	jq '.links' <$file
+	jq '.links[]' <$file
     fi
     
 

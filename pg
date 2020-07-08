@@ -11,9 +11,9 @@ path=$(cat $HOME/.config/protograph)
 # accept graph name as argument
 if test -z $1; then
     # default
-    export file=$path/.protograph
+    export file=$path/data/test
 else
-    export file=$path/$1
+    export file=$path/data/$1
 fi
 
 echo "using $file"
