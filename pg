@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# get filename
+
+
+## vvvvvvvvvvvvvvvv  Either set 'path' to install location, or read it from file 
+path=$(cat $HOME/.config/protograph)
+## ^^^^^^^^^^^^^^^^
+
+
+# accept graph name as argument
+if test -z $1; then
+    # default
+    export file=$path/.protograph
+else
+    export file=$path/$1
+fi
+
+echo "using $file"
+
+while true; do
+    read -p "> " command
+
+    if test "$command" == "q"; then
+	exit
+    fi
+
+    $path/protograph $command
+
+done
