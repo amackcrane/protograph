@@ -15,7 +15,7 @@ help_text=$(cat <<EOF
 
 protograph
 
-to enter: 'pg <graphname>'
+to start: 'pg <graphname>'
 
 node <text>
 link <src_id> <target_id> [<text>]
@@ -24,29 +24,13 @@ list-link [<node_id> | -s <search_key>]
 rm <node_id>
 rm-link <src_id> <target_id>
 render
+- render network with plotly; opens browser
 edit
-
+- pull up data json in text file, for buggy things
 
 EOF
 	   )"\n\n"
 
-
-# TODO
-# figure out directedness
-# threats to portability??
-#   jq
-#     jq-win64.exe available on github
-#   installation procedure
-#     put python script somewhere
-#     put pg and protograph both on search path, chmodded
-#       actually hashbang obviates chmod on windows?
-#       C:\Windows\system32
-#     configure...
-#       path to python script & data files
-#     python libs
-#       pip3 install -r ...
-#         plotly
-#         networkx
 
 if test -z $1; then
     printf "$help_text"
@@ -329,5 +313,5 @@ fi
 
 
 if test $edit; then
-    amcmacs $file -l
+    emacs $file &
 fi
