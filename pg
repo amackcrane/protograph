@@ -25,6 +25,6 @@ while true; do
 	exit
     fi
 
-    $path/protograph $command
+    $path/protograph.sh $command
 
 done
