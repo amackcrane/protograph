@@ -74,7 +74,6 @@ case $1 in
 esac
 shift
 
-#while test $# -gt 0; do
 
 if test -z $file; then
     echo "Must be invoked via 'pg'!"
@@ -88,8 +87,10 @@ fi
 
 function get_id {
 
+    existing_ids=$(jq -r '.nodes[] | .id' <$file)
+    
     for id in $(seq 1 10000); do
-	if test -z "$(jq --arg id $id '.nodes[] | select(.id==$id)' <$file)"; then
+	if ! [[ "$existing_ids" =~ $id ]]; then
 	    echo $id
 	    success=t
 	    break
@@ -193,7 +194,12 @@ if test $list; then
 	
     else
 	for key in $keys; do
-	    jq -c --arg key $key '.nodes[] | select(.text | contains($key))' <$file
+	    # check for numeric id
+	    if test $key -eq $key 2> /dev/null; then
+		jq -c --arg id $key '.nodes[] | select(.id==$id)' <$file
+	    else
+		jq -c --arg key $key '.nodes[] | select(.text | contains($key))' <$file
+	    fi
         done
     fi
 
@@ -226,7 +232,7 @@ if test $list_link; then
 	fi
 	
     else
-	jq '.links[]' <$file
+	jq -c '.links[]' <$file
     fi
     
 
@@ -301,10 +307,12 @@ if test $remove_link; then
 	exit
     fi
 
+    $path/protograph list $src
+    $path/protograph list $target
     jq <<<"$to_rm"
     read -p "delete me? (y/n) > " confirm
 
-    if test $confirm != "y"; then
+    if test "$confirm" != "y"; then
 	echo "Not deleting"
 	exit
     fi
