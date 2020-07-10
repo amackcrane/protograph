@@ -202,7 +202,7 @@ if test $link; then
 	jq <<<"$existing"
 	read -p "Link exists; modify? (y/n) > " modify
 	if test $modify == "y"; then
-	    $path/protograph rm-link $src $target
+	    $path/protograph.sh rm-link $src $target
 	else
 	    echo "Fine then, doing nothing"
 	    exit
@@ -295,7 +295,7 @@ if test $remove; then
     shift
 
     # too lazy to clean up links; make the user do it
-    links=$($path/protograph list-link $id)
+    links=$($path/protograph.sh list-link $id)
     if test "$links"; then
 	echo "Clean up its links first!"
 	jq <<<"$links"
@@ -349,8 +349,8 @@ if test $remove_link; then
 	exit
     fi
 
-    $path/protograph list $src
-    $path/protograph list $target
+    $path/protograph.sh list $src
+    $path/protograph.sh list $target
     jq <<<"$to_rm"
     read -p "delete me? (y/n) > " confirm
 
