@@ -15,9 +15,24 @@ with open(path, 'r') as f:
 
 G = nx.readwrite.json_graph.node_link_graph(data, directed=True, multigraph=False)
 
+# arguments: <file> <node> <depth>
 if len(sys.argv) > 2:
     focal_node = sys.argv[2]
-    
+    try:
+        depth = int(sys.argv[3])
+    except IndexError:
+        depth = 2
+    except ValueError:
+        print("Bad depth parameter!")
+        sys.exit(1)
+
+    # filter graph to neighborhood
+    keepers = set([focal_node])
+    for _ in range(depth):
+        for k in keepers.copy():
+            keepers = keepers.union(G.successors(k)).union(G.predecessors(k))
+    droppers = np.setdiff1d(G.nodes, list(keepers)) # np doesn't like sets...
+    G.remove_nodes_from(droppers)
 
 # visualize
 
