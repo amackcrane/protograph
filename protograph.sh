@@ -15,6 +15,7 @@ help_text=$(cat <<EOF
 
 protograph
 
+to list saved graphs: 'pg ls'
 to start: 'pg <graphname>'
 
 node <text> [+ | -]
