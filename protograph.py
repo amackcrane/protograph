@@ -135,6 +135,8 @@ for node in G.nodes():
     node_text.append(G.nodes[node]['text'])
     node_color.append(int(G.nodes[node]['valence']))
 
+node_color = np.where(np.equal(node_color, -1), 'red', np.where(np.equal(node_color, 1), 'green', 'gray'))
+
 node_trace = go.Scatter(
     x=node_x, y=node_y,
     mode='markers+text',
@@ -145,8 +147,7 @@ node_trace = go.Scatter(
     marker=dict(
         size=10,
         line_width=2,
-        color=node_color,
-        colorscale=['red','gray', 'green'])
+        color=node_color)
 )
 
 
