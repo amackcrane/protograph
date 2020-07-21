@@ -9,28 +9,42 @@ import math
 
 # load
 path = sys.argv[1]
+name = path.split('/')[-1]
 
 with open(path, 'r') as f:
     data = json.loads(f.read())
 
 G = nx.readwrite.json_graph.node_link_graph(data, directed=True, multigraph=False)
 
-# arguments: <file> <node> <depth>
-if len(sys.argv) > 2:
-    focal_node = sys.argv[2]
-    try:
-        depth = int(sys.argv[3])
-    except IndexError:
-        depth = 2
-    except ValueError:
-        print("Bad depth parameter!")
-        sys.exit(1)
+focal_nodes = []
+depth = None
+trawl = lambda _set, member: _set.union(G.successors(member)).union(G.predecessors(member))
 
+args = iter(sys.argv[2:])
+for arg in args:
+    if arg == "--depth":
+        depth = int(next(args))
+    elif arg == "--upstream":
+        trawl = lambda _set, member: _set.union(G.predecessors(member))
+    elif arg == "--downstream":
+        trawl = lambda _set, member: _set.union(G.successors(member))
+    else:
+        try:
+            int(arg)
+            focal_nodes.append(arg)
+        except ValueError:
+            print(f"Argument {arg} not recognized!")
+            sys.exit(1)
+
+if not depth:
+    depth = 2
+            
+if len(focal_nodes) > 0:
     # filter graph to neighborhood
-    keepers = set([focal_node])
+    keepers = set(focal_nodes)
     for _ in range(depth):
         for k in keepers.copy():
-            keepers = keepers.union(G.successors(k)).union(G.predecessors(k))
+            keepers = trawl(keepers, k)
     droppers = np.setdiff1d(G.nodes, list(keepers)) # np doesn't like sets...
     G.remove_nodes_from(droppers)
 
@@ -140,7 +154,7 @@ node_trace = go.Scatter(
 
 fig = go.Figure(data=arrow_traces + edge_traces + [node_trace],
                 layout=go.Layout(
-                    title='',
+                    title=f'{name}:',
                     titlefont_size=16,
                     showlegend=False,
                     hovermode='closest',

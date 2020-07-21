@@ -34,7 +34,7 @@ EOF
 
 
 if test -z $1; then
-    printf "$help_text"
+    echo "'help' for usage"
     exit
 fi
 
@@ -73,12 +73,46 @@ case $subcommand in
 	;;
     render)
 	export PYTHONWARNINGS=ignore
-	python3 $path/protograph.py $file $@ &
-    ;;
+
+	depth=
+	updown=
+	keys=()
+	while test $# -gt 0; do
+	    case $1 in
+		--depth)
+		    depth="--depth "$2
+		    shift
+		    ;;
+		--upstream)
+		    updown=--upstream
+		    ;;
+		--downstream)
+		    updown=--downstream
+		    ;;
+		*)
+		    keys+=($1)
+		    ;;
+	    esac
+	    shift
+	done
+
+	ids=$(source $path/resolve-node.sh ${keys[@]} --validate 2>/tmp/err)
+	
+	# don't render if node resolution failed...
+	if test -s /tmp/err; then
+	    cat /tmp/err
+	else
+	    python3 $path/protograph.py $file $ids $depth $updown &
+	fi
+	;;
     edit)
 	source $path/edit.sh $@
 	;;
-    *)
+    help)
 	printf "$help_text"
+	;;
+    *)
+	echo "not recognized"
+	echo "'help' for usage"
 	;;
 esac
