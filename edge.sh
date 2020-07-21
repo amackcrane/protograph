@@ -51,7 +51,7 @@ if test "$existing"; then
     jq <<<"$existing"
     read -p "Link exists; modify? (y/n) > " modify
     if test $modify == "y"; then
-	source $path/rm-link.sh $src $target
+	source $path/rm-edge.sh $src $target
     else
 	echo "Fine then, doing nothing"
 	exit
