@@ -6,6 +6,11 @@ import plotly.graph_objects as go
 import sys
 import numpy as np
 import math
+try:
+    from sklearn.manifold import MDS
+    import scipy
+except ImportError:
+    pass
 
 # load
 path = sys.argv[1]
@@ -15,7 +20,9 @@ with open(path, 'r') as f:
     data = json.loads(f.read())
 
 G = nx.readwrite.json_graph.node_link_graph(data, directed=True, multigraph=False)
+G = nx.OrderedDiGraph(G) # for safety w/ MDS code below
 
+# Parse command line args
 focal_nodes = []
 depth = None
 trawl = lambda _set, member: _set.union(G.successors(member)).union(G.predecessors(member))
@@ -38,7 +45,9 @@ for arg in args:
 
 if not depth:
     depth = 2
-            
+
+# Get subgraph as specified in arguments
+subtitle = ""
 if len(focal_nodes) > 0:
     # filter graph to neighborhood
     keepers = set(focal_nodes)
@@ -48,17 +57,32 @@ if len(focal_nodes) > 0:
     droppers = np.setdiff1d(G.nodes, list(keepers)) # np doesn't like sets...
     G.remove_nodes_from(droppers)
 
-# visualize
+    #subtitle = f"'{G.nodes[focal_nodes[0]]['text']}'"
+
+
+# Initial layout
 
 try:
-    pos = nx.drawing.layout.planar_layout(G)
-except nx.exception.NetworkXException:
-    #pos = nx.drawing.layout.spectral_layout(G)
-    pos = nx.drawing.layout.kamada_kawai_layout(G)
-    pos = nx.drawing.layout.spring_layout(G, k=100/math.sqrt(len(G.nodes)), iterations=1000, threshold=2e-3, pos=pos)
+    # start with MDS, if scikit available
+    adj = nx.convert_matrix.to_scipy_sparse_matrix(G)
+    dist = scipy.sparse.csgraph.dijkstra(adj, directed=False)
+    nodes = list(G.nodes)
+    coords = MDS(dissimilarity='precomputed').fit_transform(dist)
+    pos = {nodes[i]: coords[i] for i in range(len(nodes))}
+except NameError:
+    try:
+        pos = nx.drawing.layout.planar_layout(G)
+    except nx.exception.NetworkXException:
+        #pos = nx.drawing.layout.spectral_layout(G)
+        pos = nx.drawing.layout.kamada_kawai_layout(G)
 
 
-    
+# Layout
+pos = nx.drawing.layout.spring_layout(G, k=130/math.sqrt(len(G.nodes)), iterations=1000, threshold=1e-3, pos=pos)
+
+
+# Plotting
+
 def arrow(x0, y0, x1, y1):
     vector = np.array((x1-x0, y1-y0))
     midpoint = np.array([(x0 + x1)/2, (y1+y0)/2])
