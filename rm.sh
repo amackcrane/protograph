@@ -23,7 +23,7 @@ if test "$edges"; then
 fi
 
 # confirm
-to_rm=$(jq --arg id $id '.nodes[] | select(.id==$id)' <$file)
+to_rm=$(jq -c --arg id $id '.nodes[] | select(.id==$id)' <$file)
 
 if test -z "$to_rm"; then
     echo "No matching nodes"

@@ -19,8 +19,9 @@ nodes [<search_key> [<search_key> [...]]]
 edges [<node_id> | -s <search_key>]
 rm <node_id>
 rm-edge <src_id> <target_id>
-render
+render [<node_id_or_text> [--depth <int>] [--upstream | --downstream]] 
 - render network with plotly in browser
+- optionally choose focal node, length of paths to include, restrict on edge direction
 edit
 - pull up data json in text file, for buggy things
 
