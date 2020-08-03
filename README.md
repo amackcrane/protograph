@@ -2,58 +2,36 @@
 
 Draw network diagrams where nodes and edges have arbitrary text fields attached. Input data via command line; 'render' pulls up a visualization in the browser.
 
-usage example:
+## Usage
 
-```
-<command-line-prompt>$ pg
-using /<path-to-repo>/data/test
+to list saved graphs: 'pg ls'
+to start: 'pg <graphname>'
 
-> node hi how are you
-1
+node <text> [+ | -]
+edge <src_id> <target_id> [<text>] [+ | -]
+- create node or directed edge
+- text may be multiple words, needn't be quoted
+- +/- cause nodes/edges to be colored green/red in rendering
 
-> list
-{"id":"1","text":"hi how are you"}
+nodes [<search_key> [<search_key> [...]]]
+- if multiple keys, returns union
+- doesnt support quoted multiword keys
 
-> node sunrise sunset
-2
+edges [<node_id_or_search_key> [...]]
+- print all edges pertaining to all nodes matching one or more ids or search keys
 
-> list sun
-{"id":"2","text":"sunrise sunset"}
+rm <node_id>
 
-> link 1 2 diurnal greeting
-> list-link
-{
-  "source": "1",
-  "target": "2",
-  "text": " diurnal greeting"
-}
+rm-edge <src_id> <target_id>
 
-> rm 2
-Clean up its links first!
-{
-  "source": "1",
-  "target": "2",
-  "text": " diurnal greeting"
-}
+render [<node_id_or_text> [--depth <int>] [--upstream | --downstream]] 
+- render network with plotly in browser
+- optionally choose focal node, length of paths to include, restrict on edge direction
 
-> rm-link 1 2
-{
-  "source": "1",
-  "target": "2",
-  "text": " diurnal greeting"
-}
-delete me? (y/n) > y
+edit
+- pull up data json in text file, for buggy things
 
-> rm 2
-{
-  "id": "2",
-  "text": "sunrise sunset"
-}
-delete me? (y/n) > y
 
-> list
-{"id":"1","text":"hi how are you"}
-```
 
 ## Setup
 
