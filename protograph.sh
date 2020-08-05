@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-help_text=$(cat <<EOF
+cat <<EOF >/tmp/pg_help
 
 protograph
 
@@ -38,7 +38,6 @@ loose ends:
 
 
 EOF
-	   )"\n\n"
 
 
 if test -z $1; then
@@ -49,7 +48,7 @@ fi
 
 if test -z $file; then
     echo "Must be invoked via 'pg'!"
-    printf "$help_text"
+    cat /tmp/pg_help
 fi
 
 if ! test -e $file; then
@@ -117,7 +116,7 @@ case $subcommand in
 	source $path/edit.sh $@
 	;;
     help)
-	printf "$help_text"
+	cat /tmp/pg_help
 	;;
     *)
 	echo "not recognized"
