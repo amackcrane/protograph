@@ -19,9 +19,16 @@ if test -z $1; then
     export file=$path/data/test
 else
     export file=$path/data/$1
+    shift
 fi
 
 echo "using $file"
+
+if test "$1" == "render"; then
+    echo "rendering"
+    $path/protograph.sh $@
+    exit
+fi
 
 while true; do
     read -p "> " command

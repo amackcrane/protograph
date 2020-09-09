@@ -5,9 +5,13 @@ Draw network diagrams where nodes and edges have arbitrary text fields attached.
 ## Usage
 
 to list saved graphs: 'pg ls'
+
 to start: 'pg <graphname>'
 
+
+
 node <text> [+ | -]
+
 edge <src_id> <target_id> [<text>] [+ | -]
 - create node or directed edge
 - text may be multiple words, needn't be quoted
@@ -27,6 +31,7 @@ rm-edge <src_id> <target_id>
 render [<node_id_or_text> [--depth <int>] [--upstream | --downstream]] 
 - render network with plotly in browser
 - optionally choose focal node, length of paths to include, restrict on edge direction
+- may be invoked directly from command line as 'pg <graph> render ...'
 
 edit
 - pull up data json in text file, for buggy things

@@ -69,7 +69,8 @@ try:
     nodes = list(G.nodes)
     coords = MDS(dissimilarity='precomputed').fit_transform(dist)
     pos = {nodes[i]: coords[i] for i in range(len(nodes))}
-except NameError:
+except (NameError, ValueError):
+    print("(You may get better graph-drawing results if python lib scikit-learn is available)")
     try:
         pos = nx.drawing.layout.planar_layout(G)
     except nx.exception.NetworkXException:
@@ -78,7 +79,7 @@ except NameError:
 
 
 # Layout
-pos = nx.drawing.layout.spring_layout(G, k=130/math.sqrt(len(G.nodes)), iterations=1000, threshold=1e-3, pos=pos)
+#pos = nx.drawing.layout.spring_layout(G, k=150/math.sqrt(len(G.nodes)), iterations=1000, threshold=1e-3, pos=pos)
 
 
 # Plotting
