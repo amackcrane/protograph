@@ -6,11 +6,11 @@ Draw network diagrams where nodes and edges have arbitrary text fields attached.
 
 to list saved graphs: 'pg ls'
 
-to start: 'pg <graphname>'
+to start: 'pg \<graphname\>'
 
 
 
-node <text> [+ | -]
+node \<text\> [+ | -]
 
 edge <src_id> <target_id> [<text>] [+ | -]
 - create node or directed edge
