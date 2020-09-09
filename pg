@@ -7,6 +7,10 @@
 export path=$(cat $HOME/.config/protograph)
 ## ^^^^^^^^^^^^^^^^
 
+if ! test -e $path/data; then
+    mkdir $path/data
+fi
+
 # accept 'ls' subcommand to check what graphs exist
 if test "$1" == "ls"; then
     ls $path/data | grep -v "_bak$"
