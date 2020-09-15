@@ -51,7 +51,8 @@ if test -z $file; then
     cat /tmp/pg_help
 fi
 
-if ! test -e $file; then
+# if file missing or empty
+if ! test -s $file; then
     jq -n '{nodes: [], links: []}' >$file
 fi
 
