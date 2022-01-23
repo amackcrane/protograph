@@ -10,7 +10,7 @@ try:
     from sklearn.manifold import MDS
     import scipy
 except ImportError:
-    pass
+    print("(You may get better graph-drawing results if python lib scikit-learn is available)")
 
 # load
 path = sys.argv[1]
@@ -66,16 +66,19 @@ try:
     # start with MDS, if scikit available
     adj = nx.convert_matrix.to_scipy_sparse_matrix(G)
     dist = scipy.sparse.csgraph.dijkstra(adj, directed=False)
+    default = 2
+    print(f'Default distance for MDS set to {default}')
+    dist = np.nan_to_num(dist, nan=default, posinf=default, neginf=default)
     nodes = list(G.nodes)
     coords = MDS(dissimilarity='precomputed').fit_transform(dist)
     pos = {nodes[i]: coords[i] for i in range(len(nodes))}
-except (NameError, ValueError):
-    print("(You may get better graph-drawing results if python lib scikit-learn is available)")
+except (NameError, ValueError) as e:
+    print(e)
     try:
-        pos = nx.drawing.layout.planar_layout(G)
-    except nx.exception.NetworkXException:
-        #pos = nx.drawing.layout.spectral_layout(G)
         pos = nx.drawing.layout.kamada_kawai_layout(G)
+    except nx.exception.NetworkXException:
+        pos = nx.drawing.layout.spectral_layout(G)
+        #pos = nx.drawing.layout.planar_layout(G)
 
 
 # Layout
