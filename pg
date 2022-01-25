@@ -17,8 +17,14 @@ if test "$1" == "ls"; then
     exit
 fi
 
+# accept '-f' flag to read commands from a file
+if test "$1" == "-f"; then
+    export in_file=$2
+    # set and clear reusable data file
+    export file=$path/data/.from_file
+    > $file
 # accept graph name as argument
-if test -z $1; then
+elif test -z $1; then
     # default
     export file=$path/data/test
 else
@@ -34,13 +40,21 @@ if test "$1" == "render"; then
     exit
 fi
 
-while true; do
-    read -p "> " command
+# enter interactive mode if no file specified
+if test -z $in_file; then
+    while true; do
+        read -p "> " command
 
-    if test "$command" == "q"; then
-	exit
-    fi
+        if test "$command" == "q"; then
+        exit
+        fi
 
-    $path/protograph.sh $command
+        $path/protograph.sh $command
 
-done
+    done
+# otherwise execute file line by line
+else
+    while IFS= read -r command; do
+        $path/protograph.sh $command
+    done < $in_file
+fi
