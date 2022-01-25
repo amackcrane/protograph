@@ -23,21 +23,32 @@ function get_id {
 
 text=
 valence=
+hovertext=
+htext_flag=0
 while test $# -gt 0; do
     case $1 in
-	-)
-	    valence=-1
-	    ;;
-	+)
-	    valence=1
-	    ;;
-	*)
-	    if test "$text"; then
-		text="$text "$1
-	    else
-		text=$1
-	    fi
-	    ;;
+    -)
+        valence=-1
+        ;;
+    +)
+        valence=1
+        ;;
+    --hovertext)
+        htext_flag=1
+        ;;
+    *)
+        if [ $htext_flag -eq 1 ]; then
+            if test "$hovertext"; then
+                hovertext="$hovertext "$1
+            else
+                hovertext=$1
+            fi
+        elif test "$text"; then
+            text="$text "$1
+        else
+            text=$1
+        fi
+        ;;
     esac
     shift
 done
@@ -55,8 +66,8 @@ fi
 id=$(get_id)
 echo $id
 
-jq --arg id $id --arg text "$text" --arg valence $valence \
-   '.nodes += [{id: $id, text: $text, valence: $valence}]' \
+jq --arg id $id --arg text "$text" --arg valence $valence --arg hovertext "$hovertext" \
+   '.nodes += [{id: $id, text: $text, valence: $valence, hovertext: $hovertext}]' \
    <$file >${file}_tmp \
     && mv ${file}_tmp $file
 

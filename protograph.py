@@ -155,12 +155,14 @@ for x,y,c in zip(arrows_x, arrows_y, arrow_colors):
 node_x = []
 node_y = []
 node_text = []
+node_hovertext = []
 node_color = []
 for node in G.nodes():
     x, y = pos[node]
     node_x.append(x)
     node_y.append(y)
     node_text.append(G.nodes[node]['text'])
+    node_hovertext.append(G.nodes[node]['hovertext'])
     node_color.append(int(G.nodes[node]['valence']))
 
 node_color = np.where(np.equal(node_color, -1), 'red', np.where(np.equal(node_color, 1), 'green', 'gray'))
@@ -169,7 +171,8 @@ node_trace = go.Scatter(
     x=node_x, y=node_y,
     mode='markers+text',
     #hovertemplate='%{text}<extra></extra>',
-    hoverinfo='skip',
+    hoverinfo='text',
+    hovertext=node_hovertext,
     text=node_text,
     textposition='top center',
     marker=dict(
